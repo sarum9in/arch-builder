@@ -34,5 +34,12 @@ func main() {
 	if db.Error != nil {
 		log.Fatal(db.Error)
 	}
+	err = WalkSrcInfo(*root, func(path string) error {
+		log.Printf("[%s]", path)
+		return FillSrcInfo(path, db)
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println("It's OK!")
 }
