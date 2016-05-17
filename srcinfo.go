@@ -53,7 +53,7 @@ func FillSrcInfo(path string, db *gorm.DB) error {
 		Version:     info.Global.PkgVer,
 		Release:     info.Global.PkgRel,
 		Depenencies: []Package{},
-		Directory:   filepath.Base(path),
+		Directory:   filepath.Dir(path),
 	}
 	log.Printf("  {%s}", pkgBase.PkgBase)
 	depend := func(dependency string) {
