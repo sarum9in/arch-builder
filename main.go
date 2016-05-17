@@ -3,18 +3,23 @@ package main
 import (
 	"flag"
 	"log"
+	"path/filepath"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var root = flag.String("root", "", "Path to source repository root")
 var database = flag.String("database", "", "Path to sqlite3 database")
 var logSql = flag.Bool("log-sql", false, "Log SQL")
 
 func main() {
 	flag.Parse()
+	if *root == "" {
+		log.Fatal("--root must be set")
+	}
 	if *database == "" {
-		log.Fatal("--database must be set")
+		*database = filepath.Join(*root, ".database.sql")
 	}
 
 	db, err := gorm.Open("sqlite3", *database)
