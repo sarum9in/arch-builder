@@ -41,5 +41,25 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("It's OK!")
+	BuildAll(db, flag.Args())
+}
+
+func BuildAll(db *gorm.DB, packages []string) {
+	for _, pkgName := range packages {
+		Build(db, pkgName)
+	}
+}
+
+func Build(db *gorm.DB, pkgName string) {
+	var pkgBase PackageBase
+	db.Table("package_bases").
+		Select("package_bases.directory").
+		Joins("left join packages on packages.package_base_id = package_bases.id").
+		Where("packages.name = ?", pkgName).
+		First(&pkgBase)
+	if pkgBase.Directory == "" {
+		log.Printf("Package %s not found!", pkgName)
+	} else {
+		log.Printf("%s => %s", pkgName, pkgBase.Directory)
+	}
 }

@@ -47,7 +47,10 @@ func FillSrcInfo(path string, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	var oldPkgBase PackageBase
+	db.Select("id").First(&oldPkgBase, "pkg_base = ?", info.Global.PkgBase)
 	pkgBase := PackageBase{
+		ID:          oldPkgBase.ID,
 		PkgBase:     info.Global.PkgBase,
 		Packages:    []Package{},
 		Version:     info.Global.PkgVer,
@@ -75,13 +78,13 @@ func FillSrcInfo(path string, db *gorm.DB) error {
 			depend(dependency)
 		}
 		var pkg Package
-		db.FirstOrCreate(&pkg, Package{Name: pkginfo.PkgName})
+		db.FirstOrCreate(&pkg, Package{
+			PackageBaseID: pkgBase.ID,
+			Name:          pkginfo.PkgName,
+		})
 		log.Printf("  %s", pkginfo.PkgName)
 		pkgBase.Packages = append(pkgBase.Packages, pkg)
 	}
-	var oldPkgBase PackageBase
-	db.Select("id").First(&oldPkgBase, "pkg_base = ?", pkgBase.PkgBase)
-	pkgBase.ID = oldPkgBase.ID
 	db.Save(&pkgBase)
 	return nil
 }
