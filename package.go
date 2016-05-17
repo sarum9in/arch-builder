@@ -9,7 +9,7 @@ type PackageBase struct {
 	PkgBase     string
 	Packages    []Package
 	Version     string
-	Release     int
+	Release     string
 	Depenencies []Package `gorm:"many2many:package_dependencies;"`
 	Directory   string
 }
